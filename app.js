@@ -98,7 +98,7 @@ $(document).ready(function() {
                 $('<h3 class="panel-title">').text(
                     (flo_dist / METRES_PER_MILE).toFixed(1) + ' miles, ' +
                     flo.firstname + ' ' + flo.lastname +
-                    ' (' + flo.staffregions + ')'
+                    ' (' + flo.county + ')'
                 )
             ),
             flo_body
