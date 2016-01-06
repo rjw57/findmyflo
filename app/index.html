@@ -10,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="style.css">
+
+    <title>Find my FLO</title>
 </head>
 <body>
     <div class="container">
@@ -17,16 +19,53 @@
             <h1>Find My FLO</h1>
             <p class="lead">Enter your Post Code to locate your FLO.</p>
             <div class="row">
-                <p class="col-md-offset-4 col-md-4 col-sm-offset-0 col-sm-12">
+                <p class="col-md-offset-4 col-md-4 col-sm-offset-0 col-sm-12 form-inline">
                     <input class="form-control input-lg" disabled
                         id="postcode" placeholder="AB12 3CD">
+                    <a class="btn btn-lg btn-primary" href="#results">
+                        <span class="glyphicon glyphicon-search"></span>
+                        <span class="hidden">Search</span>
+                    </a>
                 </p>
             </div>
         </div>
 
-        <div id="matches">
+        <a name="results"></a>
+
+        <div id="match-panel" class="hidden">
+            <div class="page-header">
+                <h1>Closest FLOs to <span id="district"></span></h1>
+            </div>
+            <div id="matches">
+            </div>
+        </div>
+
+        <div id="no-match-panel" class="hidden">
+            <p class="text-muted no-matches lead">No matches</p>
         </div>
     </div>
+
+    <footer class="page-footer text-muted"><div class="container">
+        <p>This site is an experimental "mashup" and is in no way affiliated
+        with the Portable Antiquities Scheme or the Ordnance Survey. Data
+        correct as of January 2016</p>
+
+        <p>Source code available from
+        <a href="https://github.com/rjw57/findmyflo">Github</a> under the MIT
+        license.</p>
+
+        <p>FLO contact data from <a href="https://finds.org.uk/contacts">The
+        Portable Antiquities Scheme</a>. Licensed
+        <a href="http://creativecommons.org/licenses/by/3.0/">CC-BY-3.0</a>.
+
+        <p>OS Code-Point Open Data Licensed under the
+        <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open
+        Govenernment License</a> (OGL). Contains OS data &copy; Crown copyright
+        and database right 2016. Contains Royal Mail data &copy; Royal Mail
+        copyright and Database right 2016. Contains National Statistics data
+        &copy; Crown copyright and database right 2016.</p>
+    </div></footer>
+
     <!-- jQuery from CDN -->
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 

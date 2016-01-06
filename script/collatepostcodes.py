@@ -41,13 +41,28 @@ def main():
         with open(csv_fn) as fobj:
             update_districts_from_file(fobj, districts)
 
-    # Convert district map to list of records
-    records = []
+    # Convert district map to prefix tree
+    records = {}
     for district, (easting, northing, _) in districts.items():
-        records.append((district, int(easting), int(northing)))
+        # Add placeholder to increase district length to 4
+        if len(district) != 4:
+            district = district + '.' * (4 - len(district))
+        assert len(district) == 4
 
-    # Sort records by district
-    records.sort(key=lambda r: r[0])
+        record = int(easting), int(northing)
+        parent, node = None, records
+        for c in district:
+            try:
+                parent, node = node, node[c]
+            except KeyError:
+                parent, node = node, {}
+                parent[c] = node
+
+        # leaf node should be empty dict (districts should be unique)
+        assert len(node) == 0
+
+        # replace leaf by record
+        parent[district[-1]] = record
 
     # Write output
     with open(opts['<output>'], 'w') as fobj:
