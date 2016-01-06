@@ -1,0 +1,21 @@
+body {
+    padding-top: 70px;
+}
+
+.page-footer {
+    margin-top: 1em;
+    font-size: 80%;
+}
+
+.jumbotron {
+    text-align: center;
+}
+
+.no-matches {
+    text-align: center;
+}
+
+.flo-map {
+    width: 100%;
+    height: 25ex;
+}
