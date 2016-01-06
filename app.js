@@ -4,6 +4,7 @@ $(document).ready(function() {
     var cached_flo_matches = [];
 
     var GMAPS_KEY = 'AIzaSyBjoyx9G_O_05_ZTFtSW8GsFIOXgrJCXCs';
+    var METRES_PER_MILE = 1609.34;
 
     function locate_postcode_district(district) {
         var i, node;
@@ -74,7 +75,7 @@ $(document).ready(function() {
             text(flo.postcode), $('<br>'),
         ]);
 
-        var flo_contact = $('<div class="flo-contact">').append([
+        var flo_contact = $('<p class="flo-contact">').append([
             $('<span class="glyphicon glyphicon-phone-alt">'),
             $('<span class="hidden">').text("Telephone:"),
             text(' ' + flo.telephone),
@@ -88,13 +89,14 @@ $(document).ready(function() {
         ]);
 
         flo_body.append($('<div class="row">').append([
-            $('<div class="col-md-7 col-sm-12 hidden-xs">').append(flo_map),
-            $('<div class="col-md-5 col-sm-12">').append([flo_address, flo_contact]),
+            $('<div class="col-md-5 col-md-push-7 col-sm-12">').append([flo_address, flo_contact]),
+            $('<div class="col-md-7 col-md-pull-5 col-sm-12 hidden-xs">').append(flo_map),
         ]));
 
         flo_elem.append($('<div class="panel panel-default">').append([
             $('<div class="panel-heading">').append(
                 $('<h3 class="panel-title">').text(
+                    (flo_dist / METRES_PER_MILE).toFixed(1) + ' miles, ' +
                     flo.firstname + ' ' + flo.lastname +
                     ' (' + flo.staffregions + ')'
                 )
