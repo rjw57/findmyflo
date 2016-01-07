@@ -76,22 +76,25 @@ $(document).ready(function() {
         ]);
 
         var flo_contact = $('<p class="flo-contact">').append([
-            $('<span class="glyphicon glyphicon-phone-alt">'),
-            $('<span class="hidden">').text("Telephone:"),
-            text(' ' + flo.telephone),
+            $('<div class="col-lg-5 col-md-12">').append([
+                $('<span class="glyphicon glyphicon-phone-alt">'),
+                $('<span class="hidden">').text("Telephone:"),
+                text(' ' + flo.telephone),
+            ]),
 
-            $('<br>'),
-
-            $('<span class="glyphicon glyphicon-pencil">'),
-            $('<span class="hidden">').text("Email:"),
-            text(' '),
-            $('<a>').attr('href', 'mailto:' + flo.email_one).text(flo.email_one),
+            $('<div class="col-lg-7 col-md-12">').append([
+                $('<span class="glyphicon glyphicon-pencil">'),
+                $('<span class="hidden">').text("Email:"),
+                text(' '),
+                $('<a>').attr('href', 'mailto:' + flo.email_one).text(flo.email_one),
+            ]),
         ]);
 
         flo_body.append($('<div class="row">').append([
-            $('<div class="col-lg-6 col-lg-push-6 col-md-12 hidden-xs">').append(flo_map),
-            $('<div class="col-lg-6 col-lg-pull-6 col-md-12">').append([flo_address, flo_contact]),
+            $('<div class="col-lg-7 col-lg-push-5 col-md-12 hidden-xs">').append(flo_map),
+            $('<div class="col-lg-5 col-lg-pull-7 col-md-12">').append(flo_address),
         ]));
+        flo_body.append($('<div class="row">').append(flo_contact));
 
         flo_elem.append($('<div class="panel panel-default">').append([
             $('<div class="panel-heading">').append(
