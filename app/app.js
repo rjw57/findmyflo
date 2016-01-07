@@ -89,8 +89,8 @@ $(document).ready(function() {
         ]);
 
         flo_body.append($('<div class="row">').append([
-            $('<div class="col-md-5 col-md-push-7 col-sm-12">').append([flo_address, flo_contact]),
-            $('<div class="col-md-7 col-md-pull-5 col-sm-12 hidden-xs">').append(flo_map),
+            $('<div class="col-lg-6 col-lg-push-6 col-md-12 hidden-xs">').append(flo_map),
+            $('<div class="col-lg-6 col-lg-pull-6 col-md-12">').append([flo_address, flo_contact]),
         ]));
 
         flo_elem.append($('<div class="panel panel-default">').append([
@@ -109,7 +109,7 @@ $(document).ready(function() {
     }
 
     function match_flos(loc) {
-        var i, flo, matches;
+        var i, flo, matches, row_elems, rows;
 
         // Sort staff by distance
         data.currentStaff.sort(function(a, b) {
@@ -120,7 +120,7 @@ $(document).ready(function() {
         });
 
         // Slice array
-        matches = data.currentStaff.slice(0, 5);
+        matches = data.currentStaff.slice(0, 6);
 
         // Process top matches
         $('#district').text(loc.district);
@@ -131,11 +131,27 @@ $(document).ready(function() {
         if(arrays_are_equal(matches, cached_flo_matches)) {
             return;
         }
-        matches_div.empty();
-        for(i in matches) {
-            matches_div.append(render_flo(matches[i], loc));
-        }
         cached_flo_matches = matches;
+
+        rows = [];
+        row_elems = [];
+        for(i in matches) {
+            row_elems.push($('<div class="col-md-6 col-sm-12">').append(
+                render_flo(matches[i], loc)
+            ));
+            if(row_elems.length == 2) {
+                rows.push(row_elems);
+                row_elems = [];
+            }
+        }
+        if(row_elems.length != 0) {
+            rows.push(row_elems);
+        }
+
+        matches_div.empty();
+        for(i in rows) {
+            matches_div.append($('<div class="row">').append(rows[i]));
+        }
     }
 
     function search() {
