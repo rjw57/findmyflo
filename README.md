@@ -10,7 +10,8 @@ January 2016.
 ## Updating
 
 The Python programs in the [script](script/) directory may be used to re-create
-``data.json`` in the following manner assuming that the Code-Point Open dataset
+``data.json`` in the following manner assuming that the [Code-Point
+Open](https://www.ordnancesurvey.co.uk/business-and-government/products/code-point-open.html) dataset
 has been extracted to the ``codepo_gb`` directory:
 
 ```console
