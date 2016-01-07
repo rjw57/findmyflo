@@ -17,5 +17,6 @@ body {
 
 .flo-map {
     width: 100%;
-    height: 25ex;
+    height: 21ex;
+    margin-bottom: 1ex;
 }
