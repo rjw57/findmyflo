@@ -20,6 +20,22 @@ $ script/extractflolist.py flo.json
 $ script/mergejson.py app/data.json postcode.json flo.json
 ```
 
+## Data structure
+
+The FLO information in stored in ``data.json`` as a flat list of records. Each
+record is updated with an British National Grid (BNG) Easting and Northing. (For
+our purposes calculating BNG Euclidean distances when searching for FLOs is good
+enough.)
+
+The Postcode information is first processed to form an arithmetic mean of BNG
+Easting and Northings for each Post Code within each Post Code district. The
+Post Code districts are then stored in a
+[trie](https://en.wikipedia.org/wiki/Trie) for efficient search. This is more
+for compactness of the resulting ``data.json`` than computational efficiency.
+Modern browsers could just search a flat list of post code districts
+sufficiently quickly but having approximately O(log<sub>27</sub>(m)) search for
+*n* post code districts of length *m* is nice.
+
 ## Legal
 
 Except where listed below, this project is licensed under the MIT license. See
