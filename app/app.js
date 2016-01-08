@@ -2,18 +2,26 @@
 proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs');
 
 $(document).ready(function() {
-    var postcode_input = $('#postcode'), matches_div = $('#matches');
-    var loading = $('.loading');
-    var districts = [], flos = [];
-    var cached_flo_matches = [];
-
+    // Contants
     var GOOGLE_API_KEY = 'AIzaSyBjoyx9G_O_05_ZTFtSW8GsFIOXgrJCXCs';
     var METRES_PER_MILE = 1609.34;
     var FLO_URL = 'https://finds.org.uk/contacts/index/index/format/json';
 
+    // DOM elements
+    var postcode_input = $('#postcode'), matches_div = $('#matches');
+    var loading = $('.loading');
+
+    // Globals
+    var districts = [], flos = [], cached_flo_matches = [];
+
+    // DATA PROCESSING FUNCTIONS
+
+    // Take a currentStaff object returned from PAS and fill global variable
+    // flos with a set of FLO records. Resets cached_flo_matches.
     function loadFLOs(staff_data) {
         var i, record, p;
         flos = [];
+        cached_flo_matches = [];
         for(i in staff_data) {
             record = staff_data[i];
             if(record.staffroles != 'Finds Liaison Officer') {
@@ -30,6 +38,9 @@ $(document).ready(function() {
         }
     }
 
+    // Take a postcode district as a string and return an object with easting,
+    // northing and district properties for the matching district. Return null
+    // if no match found.
     function locatePostCodeDistrict(district) {
         var i, node;
 
@@ -53,6 +64,22 @@ $(document).ready(function() {
         return { easting: node[0], northing: node[1], district: district };
     }
 
+    // Return the Eulidean distance between any two objects with easting and
+    // northing properties.
+    function distance(p1, p2) {
+        de = p1.easting - p2.easting;
+        dn = p1.northing - p2.northing;
+        return Math.sqrt(de*de + dn*dn);
+    }
+
+    // Return true iff arrays a and b are element-wise equal.
+    function arraysAreEqual(a, b) {
+        return $(a).not(b).get().length === 0 && $(b).not(a).get().length === 0;
+    }
+
+    // DOM MANIPULATION
+
+    // Clear any rendered matches.
     function clearMatches() {
         matches_div.empty();
         $('#no-match-panel').removeClass('hidden');
@@ -60,34 +87,26 @@ $(document).ready(function() {
         matches_div.append($('<p class="text-muted no-matches">No matches</p>'));
     }
 
-    function distance(p1, p2) {
-        de = p1.easting - p2.easting;
-        dn = p1.northing - p2.northing;
-        return Math.sqrt(de*de + dn*dn);
-    }
-
-    function render_map(center) {
+    // Return a DOM element for a map centred on a location.
+    function renderMap(location) {
         var frame = $('<iframe>');
         frame.attr({
             frameborder: 0, style: "border:0", allowfullscreen: 1,
             src: 'https://www.google.com/maps/embed/v1/place?' + $.param({
-                key: GOOGLE_API_KEY, q: center,
+                key: GOOGLE_API_KEY, q: location,
             }),
         });
         return frame;
     }
 
-    function arrays_are_equal(a, b) {
-        return $(a).not(b).get().length === 0 && $(b).not(a).get().length === 0;
-    }
-
+    // Return a DOM element for a FLO.
     function renderFLOElement(flo, loc) {
         function text(t) { return document.createTextNode(t); }
 
         var flo_dist = distance(flo, loc); // in metres
         var flo_elem = $('<div class="flo">');
         var flo_body = $('<div class="panel-body">');
-        var flo_map = render_map(flo.postcode).addClass('flo-map');
+        var flo_map = renderMap(flo.postcode).addClass('flo-map');
 
         var flo_address = $('<address class="flo-address">').append([
             $('<strong>').text(flo.firstname + ' ' + flo.lastname),
@@ -133,7 +152,11 @@ $(document).ready(function() {
         return flo_elem;
     }
 
-    function match_flos(loc) {
+    // INTERACTION FUNCTIONS
+
+    // Update list of FLO matches for a given location with easting and
+    // northing properties.
+    function matchFLOs(loc) {
         var i, flo, matches, row_elems, rows;
 
         // Sort staff by distance
@@ -153,7 +176,7 @@ $(document).ready(function() {
         $('#match-panel').removeClass('hidden');
 
         // Render matches
-        if(arrays_are_equal(matches, cached_flo_matches)) {
+        if(arraysAreEqual(matches, cached_flo_matches)) {
             return;
         }
         cached_flo_matches = matches;
@@ -179,6 +202,7 @@ $(document).ready(function() {
         }
     }
 
+    // Search for FLOs within a postcode district.
     function search() {
         var search_val = postcode_input.val(), match;
 
@@ -195,11 +219,15 @@ $(document).ready(function() {
         }
 
         // Otherwise, match flo to location
-        match_flos(match);
+        matchFLOs(match);
     }
 
+    // EVENT HANDLERS AND INITIALISATION
+
+    // Call search() whenever post code input element changes.
     postcode_input.on('input change', function(event) { search(); });
 
+    // Kick-off external data loading.
     $.when($.getJSON('districts.json'), $.getJSON(FLO_URL)).then(
         function(_districts, _flos) {
             districts = _districts[0].districts;
@@ -207,5 +235,6 @@ $(document).ready(function() {
             postcode_input.removeAttr('disabled');
             loading.addClass('loaded');
             search();
-        });
+        }
+    );
 });
