@@ -1,12 +1,36 @@
+// Add a definition for EPSG:27700 (BNG) to proj4js
+proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs');
+
 $(document).ready(function() {
     var postcode_input = $('#postcode'), matches_div = $('#matches');
-    var data = { currentStaff: [], districts: [] };
+    var loading = $('.loading');
+    var districts = [], flos = [];
     var cached_flo_matches = [];
 
-    var GMAPS_KEY = 'AIzaSyBjoyx9G_O_05_ZTFtSW8GsFIOXgrJCXCs';
+    var GOOGLE_API_KEY = 'AIzaSyBjoyx9G_O_05_ZTFtSW8GsFIOXgrJCXCs';
     var METRES_PER_MILE = 1609.34;
+    var FLO_URL = 'https://finds.org.uk/contacts/index/index/format/json';
 
-    function locate_postcode_district(district) {
+    function loadFLOs(staff_data) {
+        var i, record, p;
+        flos = [];
+        for(i in staff_data) {
+            record = staff_data[i];
+            if(record.staffroles != 'Finds Liaison Officer') {
+                continue;
+            }
+
+            // Map from lng/lat to BNG
+            p = proj4('EPSG:4326', 'EPSG:27700',
+                      [record.longitude, record.latitude]);
+            record.easting = p[0];
+            record.northing = p[1];
+
+            flos.push(record);
+        }
+    }
+
+    function locatePostCodeDistrict(district) {
         var i, node;
 
         // Pad district with "." to 4 characters
@@ -18,7 +42,7 @@ $(document).ready(function() {
 
         // Districts are stored as a prefix tree starting from districts. If at
         // any stage there is no tree branch for the district, return no-match.
-        node = data.districts;
+        node = districts;
         for(i in district) {
             node = node[district[i]];
             if(!node) { return null; }
@@ -29,7 +53,7 @@ $(document).ready(function() {
         return { easting: node[0], northing: node[1], district: district };
     }
 
-    function clear_matches() {
+    function clearMatches() {
         matches_div.empty();
         $('#no-match-panel').removeClass('hidden');
         $('#match-panel').addClass('hidden');
@@ -47,7 +71,7 @@ $(document).ready(function() {
         frame.attr({
             frameborder: 0, style: "border:0", allowfullscreen: 1,
             src: 'https://www.google.com/maps/embed/v1/place?' + $.param({
-                key: GMAPS_KEY, q: center,
+                key: GOOGLE_API_KEY, q: center,
             }),
         });
         return frame;
@@ -115,7 +139,7 @@ $(document).ready(function() {
         var i, flo, matches, row_elems, rows;
 
         // Sort staff by distance
-        data.currentStaff.sort(function(a, b) {
+        flos.sort(function(a, b) {
             // compute distances
             var a_dist = distance(a, loc);
             var b_dist = distance(b, loc);
@@ -123,7 +147,7 @@ $(document).ready(function() {
         });
 
         // Slice array
-        matches = data.currentStaff.slice(0, 6);
+        matches = flos.slice(0, 6);
 
         // Process top matches
         $('#district').text(loc.district);
@@ -165,10 +189,10 @@ $(document).ready(function() {
         search_val = search_val.trim().toUpperCase().split(' ')[0];
 
         // Search database
-        match = locate_postcode_district(search_val);
+        match = locatePostCodeDistrict(search_val);
         if(!match) {
             // no matches
-            clear_matches();
+            clearMatches();
             return;
         }
 
@@ -178,9 +202,12 @@ $(document).ready(function() {
 
     postcode_input.on('input change', function(event) { search(); });
 
-    $.getJSON('data.json').then(function(r) {
-        data = r;
-        postcode_input.removeAttr('disabled');
-        search();
-    });
+    $.when($.getJSON('districts.json'), $.getJSON(FLO_URL)).then(
+        function(_districts, _flos) {
+            districts = _districts[0].districts;
+            loadFLOs(_flos[0].currentStaff);
+            postcode_input.removeAttr('disabled');
+            loading.addClass('loaded');
+            search();
+        });
 });

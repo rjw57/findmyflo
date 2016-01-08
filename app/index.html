@@ -17,8 +17,15 @@
     <div class="container">
         <div class="jumbotron">
             <h1>Find My FLO</h1>
-            <p class="lead">Enter your Post Code to locate your FLO.</p>
-            <div class="row">
+            <div class="row loading">
+                <div class="col-md-offset-4 col-md-4 col-sm-offset-1 col-sm-10">
+                    <p class="lead">Loading &hellip;</p>
+                </div>
+            </div>
+            <p class="lead loading loading-show-on-load">
+                Enter your Post Code to locate your FLO.
+            </p>
+            <div class="row loading loading-show-on-load">
                 <div class="col-md-offset-4 col-md-4 col-sm-offset-1 col-sm-10">
                     <div class="input-group">
                         <input type="text" class="form-control input-lg" disabled
@@ -71,11 +78,14 @@
     </div></footer>
 
     <!-- jQuery from CDN -->
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
     <!-- Bootstrap from CDN -->
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <!-- Proj4js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.12/proj4-src.js"></script>
 
     <script src="app.js"></script>
 </body>

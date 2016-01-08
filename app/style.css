@@ -20,3 +20,8 @@ body {
     height: 21ex;
     margin-bottom: 1ex;
 }
+
+.loading { display: block; }
+.loading.loaded { display: none; }
+.loading.loading-show-on-load { display: none; }
+.loading.loading-show-on-load.loaded { display: block; }
