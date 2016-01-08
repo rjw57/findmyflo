@@ -81,7 +81,7 @@ $(document).ready(function() {
         return $(a).not(b).get().length === 0 && $(b).not(a).get().length === 0;
     }
 
-    function render_flo(flo, loc) {
+    function renderFLOElement(flo, loc) {
         function text(t) { return document.createTextNode(t); }
 
         var flo_dist = distance(flo, loc); // in metres
@@ -130,8 +130,6 @@ $(document).ready(function() {
             flo_body
         ]));
 
-        console.log(flo_dist);
-        console.log(flo);
         return flo_elem;
     }
 
@@ -164,7 +162,7 @@ $(document).ready(function() {
         row_elems = [];
         for(i in matches) {
             row_elems.push($('<div class="col-md-6 col-sm-12">').append(
-                render_flo(matches[i], loc)
+                renderFLOElement(matches[i], loc)
             ));
             if(row_elems.length == 2) {
                 rows.push(row_elems);
