@@ -16,9 +16,10 @@ body {
 }
 
 .flo-map {
-    width: 100%;
-    height: 21ex;
     margin-bottom: 1ex;
+}
+.flo-map img {
+    width: 100%;
 }
 
 .loading { display: block; }

@@ -12,16 +12,15 @@ $(document).ready(function() {
     var loading = $('.loading');
 
     // Globals
-    var districts = [], flos = [], cached_flo_matches = [];
+    var districts = [], flos = [];
 
     // DATA PROCESSING FUNCTIONS
 
     // Take a currentStaff object returned from PAS and fill global variable
-    // flos with a set of FLO records. Resets cached_flo_matches.
+    // flos with a set of FLO records.
     function loadFLOs(staff_data) {
         var i, record, p;
         flos = [];
-        cached_flo_matches = [];
         for(i in staff_data) {
             record = staff_data[i];
             if(record.staffroles != 'Finds Liaison Officer') {
@@ -72,11 +71,6 @@ $(document).ready(function() {
         return Math.sqrt(de*de + dn*dn);
     }
 
-    // Return true iff arrays a and b are element-wise equal.
-    function arraysAreEqual(a, b) {
-        return $(a).not(b).get().length === 0 && $(b).not(a).get().length === 0;
-    }
-
     // DOM MANIPULATION
 
     // Clear any rendered matches.
@@ -88,15 +82,15 @@ $(document).ready(function() {
     }
 
     // Return a DOM element for a map centred on a location.
-    function renderMap(location) {
-        var frame = $('<iframe>');
-        frame.attr({
-            frameborder: 0, style: "border:0", allowfullscreen: 1,
-            src: 'https://www.google.com/maps/embed/v1/place?' + $.param({
-                key: GOOGLE_API_KEY, q: location,
-            }),
-        });
-        return frame;
+    function renderMap(loc) {
+        var img = $('<img>');
+
+        img.attr('alt', 'Map of ' + loc);
+        img.attr('src', 'https://maps.googleapis.com/maps/api/staticmap?' + $.param({
+            key: GOOGLE_API_KEY, size:'209x157', scale: 2, center: loc,
+            zoom: 12,
+        }));
+        return img;
     }
 
     // Return a DOM element for a FLO.
@@ -106,7 +100,7 @@ $(document).ready(function() {
         var flo_dist = distance(flo, loc); // in metres
         var flo_elem = $('<div class="flo">');
         var flo_body = $('<div class="panel-body">');
-        var flo_map = renderMap(flo.postcode).addClass('flo-map');
+        var flo_map = $('<div>').append(renderMap(flo.postcode + ', UK')).addClass('flo-map');
 
         var flo_address = $('<address class="flo-address">').append([
             $('<strong>').text(flo.firstname + ' ' + flo.lastname),
@@ -118,14 +112,14 @@ $(document).ready(function() {
             text(flo.postcode), $('<br>'),
         ]);
 
-        var flo_contact = $('<p class="flo-contact">').append([
-            $('<div class="col-lg-5 col-md-12">').append([
+        var flo_contact = $('<div class="flo-contact col-xs-12">').append([
+            $('<div>').append([
                 $('<span class="glyphicon glyphicon-phone-alt">'),
                 $('<span class="hidden">').text("Telephone:"),
                 text(' ' + flo.telephone),
             ]),
 
-            $('<div class="col-lg-7 col-md-12">').append([
+            $('<div>').append([
                 $('<span class="glyphicon glyphicon-pencil">'),
                 $('<span class="hidden">').text("Email:"),
                 text(' '),
@@ -134,8 +128,8 @@ $(document).ready(function() {
         ]);
 
         flo_body.append($('<div class="row">').append([
-            $('<div class="col-lg-7 col-lg-push-5 col-md-12 hidden-xs">').append(flo_map),
-            $('<div class="col-lg-5 col-lg-pull-7 col-md-12">').append(flo_address),
+            $('<div class="col-sm-8 col-md-6">').append(flo_address),
+            $('<div class="col-sm-4 col-md-6 hidden-xs">').append(flo_map),
         ]));
         flo_body.append($('<div class="row">').append(flo_contact));
 
@@ -176,11 +170,6 @@ $(document).ready(function() {
         $('#match-panel').removeClass('hidden');
 
         // Render matches
-        if(arraysAreEqual(matches, cached_flo_matches)) {
-            return;
-        }
-        cached_flo_matches = matches;
-
         rows = [];
         row_elems = [];
         for(i in matches) {
