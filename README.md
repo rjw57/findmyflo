@@ -4,8 +4,8 @@
 
 Post Code data is taken from the OS Code-Point Open Database as of January 2016.
 
-FLO contact data is taken from [PAS website](https://finds.org.uk/) as of
-January 2016.
+FLO contact data is taken from [PAS website](https://finds.org.uk/) on each
+request.
 
 ## Updating
 
